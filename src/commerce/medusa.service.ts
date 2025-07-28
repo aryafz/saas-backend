@@ -50,6 +50,6 @@ export class MedusaService {
   }
 
   createOrder(orderDto: CreateOrderDto) {
-    return this.getClient().admin.orders.create(orderDto);
+    return this.getClient().admin.draftOrders.create(orderDto);
   }
 }
