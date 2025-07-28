@@ -8,7 +8,7 @@
   "scripts": {
     "start": "npm run build && npx prisma migrate deploy && node dist/main.js",
     "start:dev": "nest start --watch",
-    "build": "nest build",
+    "build": "nest build -c tsconfig.build.json",
     "lint": "eslint \"{src,prisma}/**/*.{ts,js}\"",
     "format": "prettier --write \"{src,prisma}/**/*.{ts,md,json}\"",
     "prisma:generate": "prisma generate",
