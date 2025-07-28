@@ -17,7 +17,9 @@ describe('SiteService', () => {
 
   it('creates site', async () => {
     (prisma.site.create as jest.Mock).mockResolvedValue({ id: 's' });
-    await expect(service.create({ name: 'a', ownerId: 'u' })).resolves.toEqual({
+    await expect(
+      service.create({ name: 'a', slug: 'a' }, 'u'),
+    ).resolves.toEqual({
       id: 's',
     });
   });

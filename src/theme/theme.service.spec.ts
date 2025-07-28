@@ -16,7 +16,7 @@ describe('ThemeService', () => {
   it('creates theme', async () => {
     (prisma.theme.create as jest.Mock).mockResolvedValue({ id: 't' });
     await expect(
-      service.create({ key: 'k', name: 'theme', assetsUrl: 'url' }),
+      service.create({ code: 'k', name: 'theme', assetsUrl: 'url' }),
     ).resolves.toEqual({ id: 't' });
   });
 });

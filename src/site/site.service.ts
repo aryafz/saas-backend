@@ -7,8 +7,31 @@ import { UpdateSiteDto } from './dto/update-site.dto';
 export class SiteService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateSiteDto, tenantId: string) {
-    return this.prisma.site.create({ data: { ...dto, ownerId: tenantId } });
+  async create(dto: CreateSiteDto, tenantId: string) {
+    const site = await this.prisma.site.create({
+      data: { ...dto, ownerId: tenantId },
+    });
+
+    if (process.env.MEDUSA_URL) {
+      try {
+        const { createStoresWorkflow } = await import('@medusajs/core-flows');
+        const { result } = await createStoresWorkflow({} as any).run({
+          input: { stores: [{ name: site.name, metadata: { siteId: site.id } }] },
+        });
+        const store = result[0];
+        await this.prisma.site.update({
+          where: { id: site.id },
+          data: {
+            medusaStoreId: store.id,
+            defaultSalesChannelId: store.default_sales_channel_id,
+          },
+        });
+      } catch {
+        // ignore workflow errors for now
+      }
+    }
+
+    return site;
   }
 
   findAll(tenantId: string) {
