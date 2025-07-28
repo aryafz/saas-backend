@@ -25,6 +25,7 @@ RUN npx prisma generate
 
 # ---------- مرحلهٔ Runtime ----------
 FROM node:20-alpine
+RUN apk add --no-cache curl
 WORKDIR /app
 ENV NODE_ENV=production
 
