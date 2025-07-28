@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSiteDto } from './dto/create-site.dto';
 import { UpdateSiteDto } from './dto/update-site.dto';
@@ -19,14 +19,20 @@ export class SiteService {
     return this.prisma.site.findFirst({ where: { id, ownerId: tenantId } });
   }
 
-  update(id: string, dto: UpdateSiteDto, tenantId: string) {
-    return this.prisma.site.update({
-      where: { id, ownerId: tenantId },
+  async update(id: string, dto: UpdateSiteDto, ownerId: string) {
+    const result = await this.prisma.site.updateMany({
+      where: { id, ownerId },
       data: dto,
     });
+    if (result.count === 0) throw new NotFoundException('Site not found');
+    return this.findOne(id, ownerId);
   }
 
-  remove(id: string, tenantId: string) {
-    return this.prisma.site.delete({ where: { id, ownerId: tenantId } });
+  async remove(id: string, ownerId: string) {
+    const result = await this.prisma.site.deleteMany({
+      where: { id, ownerId },
+    });
+    if (result.count === 0) throw new NotFoundException('Site not found');
+    return { success: true };
   }
 }

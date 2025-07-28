@@ -2,13 +2,13 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateThemeDto {
   @IsNotEmpty()
-  key: string;
-
+  code!: string;
+  
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   description?: string;
 
   @IsNotEmpty()
-  assetsUrl: string;
+  assetsUrl!: string;
 }

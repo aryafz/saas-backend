@@ -23,7 +23,7 @@ export class AuthController {
     if (!user) {
       throw new Error('Invalid credentials');
     }
-    return this.authService.login(user.id);
+    return this.authService.login(user.id, user.role);
   }
 
   @Public()

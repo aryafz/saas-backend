@@ -1,161 +1,149 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 enum Role {
-  SUPER_ADMIN
-  SITE_OWNER
-  OPERATOR
-  USER
-}
-
-enum SitePlanStatus {
-  ACTIVE
-  CANCELED
-  EXPIRED
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
+  super_admin
+  site_owner
+  operator
+  user
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   email     String   @unique
   password  String
-  role      Role     @default(USER)
-  sites     Site[]   @relation("OwnerSites")
+  role      Role     @default(user)
+  firstName String?
+  lastName  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  sites     Site[]   @relation("UserSites")
 }
 
 model Site {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   name      String
-  ownerId   String
-  owner     User     @relation("OwnerSites", fields: [ownerId], references: [id])
+  slug      String   @unique
+  ownerId   String   @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  owner     User     @relation("UserSites", fields: [ownerId], references: [id], onDelete: Cascade)
   plans     SitePlan[]
   features  SiteFeature[]
   themes    SiteTheme[]
   payments  Payment[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([ownerId])
 }
 
 model Plan {
-  id        String        @id @default(uuid())
-  name      String
-  price     Float
-  features  PlanFeature[]
-  sites     SitePlan[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id          String        @id @default(uuid()) @db.Uuid
+  code        String        @unique
+  name        String
+  description String?
+  priceCents  Int
+  currency    String        @default("USD")
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  features    PlanFeature[]
+  sites       SitePlan[]
 }
 
 model Feature {
-  id          String        @id @default(uuid())
-  name        String        @unique
+  id          String        @id @default(uuid()) @db.Uuid
+  code        String        @unique
+  name        String
   description String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   plans       PlanFeature[]
   sites       SiteFeature[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }
 
 model PlanFeature {
-  id        String   @id @default(uuid())
-  planId    String
-  featureId String
-  plan      Plan     @relation(fields: [planId], references: [id])
-  feature   Feature  @relation(fields: [featureId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String  @id @default(uuid()) @db.Uuid
+  planId    String  @db.Uuid
+  featureId String  @db.Uuid
+  plan      Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+  feature   Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
 
+  @@unique([planId, featureId])
   @@index([planId])
   @@index([featureId])
 }
 
 model SitePlan {
-  id        String         @id @default(uuid())
-  siteId    String
-  planId    String
-  site      Site           @relation(fields: [siteId], references: [id])
-  plan      Plan           @relation(fields: [planId], references: [id])
-  startedAt DateTime       @default(now())
-  expiresAt DateTime?
-  status    SitePlanStatus @default(ACTIVE)
-  payments  Payment[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id       String   @id @default(uuid()) @db.Uuid
+  siteId   String   @db.Uuid
+  planId   String   @db.Uuid
+  isActive Boolean  @default(true)
+  startsAt DateTime @default(now())
+  endsAt   DateTime?
+  status   String   @default("active")
+  site     Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  plan     Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
 
+  @@unique([siteId, planId])
   @@index([siteId])
   @@index([planId])
 }
 
 model SiteFeature {
-  id          String   @id @default(uuid())
-  siteId      String
-  featureId   String
-  site        Site     @relation(fields: [siteId], references: [id])
-  feature     Feature  @relation(fields: [featureId], references: [id])
-  activatedAt DateTime @default(now())
-  expiresAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String  @id @default(uuid()) @db.Uuid
+  siteId    String  @db.Uuid
+  featureId String  @db.Uuid
+  isActive  Boolean @default(true)
+  site      Site    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  feature   Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
 
+  @@unique([siteId, featureId])
   @@index([siteId])
   @@index([featureId])
 }
 
 model Theme {
-  id          String      @id @default(uuid())
-  key         String      @unique
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
   name        String
   description String?
-  assetsUrl   String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   sites       SiteTheme[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
 }
 
 model SiteTheme {
-  id          String   @id @default(uuid())
-  siteId      String
-  themeId     String
-  site        Site     @relation(fields: [siteId], references: [id])
-  theme       Theme    @relation(fields: [themeId], references: [id])
-  activatedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id       String  @id @default(uuid()) @db.Uuid
+  siteId   String  @db.Uuid
+  themeId  String  @db.Uuid
+  isActive Boolean @default(true)
+  site     Site    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  theme    Theme   @relation(fields: [themeId], references: [id], onDelete: Cascade)
 
+  @@unique([siteId, themeId])
   @@index([siteId])
   @@index([themeId])
 }
 
 model Payment {
-  id             String        @id @default(uuid())
-  siteId         String
-  sitePlanId     String
-  site           Site          @relation(fields: [siteId], references: [id])
-  sitePlan       SitePlan      @relation(fields: [sitePlanId], references: [id])
-  amount         Float
-  currency       String
-  status         PaymentStatus @default(PENDING)
-  transactionDate DateTime     @default(now())
-  metadata       Json?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id          String   @id @default(uuid()) @db.Uuid
+  siteId      String   @db.Uuid
+  amountCents Int
+  currency    String   @default("USD")
+  status      String   @default("pending")
+  externalId  String?
+  invoiceNo   String?  @unique
+  createdAt   DateTime @default(now())
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@index([siteId])
-  @@index([sitePlanId])
+  @@index([status])
 }

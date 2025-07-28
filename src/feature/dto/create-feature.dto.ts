@@ -2,7 +2,9 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateFeatureDto {
   @IsNotEmpty()
-  name: string;
+  code!: string;
+  @IsNotEmpty()
+  name!: string;
 
   description?: string;
 }

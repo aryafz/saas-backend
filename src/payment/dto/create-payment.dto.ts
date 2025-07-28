@@ -1,25 +1,17 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsEnum,
-  IsOptional,
-  IsISO8601,
-} from 'class-validator';
-import { PaymentStatus } from '@prisma/client';
+import { IsNotEmpty, IsNumber, IsOptional, IsISO8601 } from 'class-validator';
 
 export class CreatePaymentDto {
   @IsNotEmpty()
-  sitePlanId: string;
+  sitePlanId!: string;
 
   @IsNumber()
-  amount: number;
+  amount!: number;
 
   @IsNotEmpty()
-  currency: string;
+  currency!: string;
 
   @IsOptional()
-  @IsEnum(PaymentStatus)
-  status?: PaymentStatus;
+  status?: string;
 
   @IsOptional()
   @IsISO8601()

@@ -30,23 +30,19 @@ export class SitePlanService {
   }
 
   async update(id: string, dto: UpdateSitePlanDto, tenant: string) {
-    try {
-      return await this.prisma.sitePlan.update({
-        where: { id, siteId: tenant },
-        data: dto,
-      });
-    } catch {
-      throw new NotFoundException('SitePlan not found');
-    }
+    const result = await this.prisma.sitePlan.updateMany({
+      where: { id, siteId: tenant },
+      data: dto,
+    });
+    if (result.count === 0) throw new NotFoundException('SitePlan not found');
+    return this.findOne(id, tenant);
   }
 
   async remove(id: string, tenant: string) {
-    try {
-      return await this.prisma.sitePlan.delete({
-        where: { id, siteId: tenant },
-      });
-    } catch {
-      throw new NotFoundException('SitePlan not found');
-    }
+    const result = await this.prisma.sitePlan.deleteMany({
+      where: { id, siteId: tenant },
+    });
+    if (result.count === 0) throw new NotFoundException('SitePlan not found');
+    return { success: true };
   }
 }
