@@ -12,8 +12,8 @@ import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-@ApiBearerAuth()
 @ApiTags('plans')
+@ApiBearerAuth()
 @Controller('plans')
 export class PlanController {
   constructor(private readonly planService: PlanService) {}

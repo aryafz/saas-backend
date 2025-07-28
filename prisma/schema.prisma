@@ -33,6 +33,7 @@ model Site {
   plans     SitePlan[]
   features  SiteFeature[]
   themes    SiteTheme[]
+  payments  Payment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -66,6 +67,7 @@ model PlanFeature {
   plan      Plan     @relation(fields: [planId], references: [id])
   feature   Feature  @relation(fields: [featureId], references: [id])
 
+
   @@index([planId])
   @@index([featureId])
 }
@@ -88,7 +90,19 @@ model SitePlan {
   payments   Payment[]
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
+  @@id([planId, featureId])
+  @@index([featureId])
+}
 
+model SitePlan {
+  id        String   @id @default(uuid())
+  siteId    String
+  planId    String
+  site      Site     @relation(fields: [siteId], references: [id])
+  plan      Plan     @relation(fields: [planId], references: [id])
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  isActive  Boolean  @default(true)
   @@index([siteId])
   @@index([planId])
 }
@@ -103,7 +117,7 @@ model SiteFeature {
   expiresAt  DateTime?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
+  enabledAt DateTime @default(now())
   @@index([siteId])
   @@index([featureId])
 }
@@ -117,6 +131,13 @@ model Theme {
   sites       SiteTheme[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  id        String      @id @default(uuid())
+  name      String
+  description String?
+  sites     SiteTheme[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
 }
 
 model SiteTheme {
@@ -130,6 +151,7 @@ model SiteTheme {
   @@index([siteId])
   @@index([themeId])
 }
+
 
 enum PaymentStatus {
   PENDING
@@ -150,4 +172,15 @@ model Payment {
   updatedAt      DateTime       @updatedAt
 
   @@index([sitePlanId])
+model Payment {
+  id        String   @id @default(uuid())
+  siteId    String
+  amount    Float
+  currency  String   @default("USD")
+  status    String
+  site      Site     @relation(fields: [siteId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([siteId])
 }

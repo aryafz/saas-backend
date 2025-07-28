@@ -12,8 +12,8 @@ import { CreateSiteDto } from './dto/create-site.dto';
 import { UpdateSiteDto } from './dto/update-site.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-@ApiBearerAuth()
 @ApiTags('sites')
+@ApiBearerAuth()
 @Controller('sites')
 export class SiteController {
   constructor(private readonly siteService: SiteService) {}

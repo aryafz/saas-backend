@@ -13,14 +13,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Roles } from '../auth/roles.decorator';
 
-@ApiBearerAuth()
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Roles('SUPER_ADMIN')
   @Post()
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Create user' })
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);

@@ -12,8 +12,8 @@ import { CreateFeatureDto } from './dto/create-feature.dto';
 import { UpdateFeatureDto } from './dto/update-feature.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-@ApiBearerAuth()
 @ApiTags('features')
+@ApiBearerAuth()
 @Controller('features')
 export class FeatureController {
   constructor(private readonly featureService: FeatureService) {}
