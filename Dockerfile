@@ -13,7 +13,10 @@ RUN npm ci --legacy-peer-deps
 # کپی کردن تمام کدهای پروژه
 COPY . .
 
-# ساختن پوشه نهایی 'dist'
+# *** مرحله کلیدی: ابتدا نقشه قطعات را بساز ***
+RUN npx prisma generate
+
+# ساختن پوشه نهایی 'dist' با استفاده از نقشه
 RUN npm run build
 
 # --- مرحله دوم: ویترین نمایش (Runner) ---
