@@ -25,7 +25,7 @@ export class SiteController {
   constructor(private readonly siteService: SiteService) {}
 
   @Post()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Create site' })
   create(@Body() dto: CreateSiteDto, @Tenant() tenant: string) {
     return this.siteService.create(dto, tenant);
@@ -44,7 +44,7 @@ export class SiteController {
   }
 
   @Patch(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Update site' })
   update(
     @Param('id') id: string,
@@ -55,7 +55,7 @@ export class SiteController {
   }
 
   @Delete(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Delete site' })
   remove(@Param('id') id: string, @Tenant() tenant: string) {
     return this.siteService.remove(id, tenant);

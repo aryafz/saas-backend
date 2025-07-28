@@ -2,8 +2,8 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreatePlanFeatureDto {
   @IsNotEmpty()
-  planId: string;
+  planId!: string;
 
   @IsNotEmpty()
-  featureId: string;
+  featureId!: string;
 }

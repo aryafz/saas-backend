@@ -1,22 +1,22 @@
-import { IsNotEmpty, IsEnum, IsOptional, IsDateString } from 'class-validator';
-import { SitePlanStatus } from '@prisma/client';
+import { IsString, IsBoolean, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateSitePlanDto {
-  @IsNotEmpty()
-  siteId: string;
+  // siteId comes from tenant
+  @IsString()
+  planId!: string;
 
-  @IsNotEmpty()
-  planId: string;
-
-  @IsOptional()
-  @IsDateString()
-  startedAt?: string;
+  @IsBoolean()
+  isActive!: boolean;
 
   @IsOptional()
   @IsDateString()
-  expiresAt?: string;
+  startsAt?: string;
 
   @IsOptional()
-  @IsEnum(SitePlanStatus)
-  status?: SitePlanStatus;
+  @IsDateString()
+  endsAt?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }

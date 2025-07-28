@@ -24,7 +24,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Create user' })
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
@@ -43,14 +43,14 @@ export class UserController {
   }
 
   @Patch(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Update user' })
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.userService.update(id, dto);
   }
 
   @Delete(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Delete user' })
   remove(@Param('id') id: string) {
     return this.userService.remove(id);

@@ -1,13 +1,11 @@
-import { IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateSiteThemeDto {
-  @IsNotEmpty()
-  siteId: string;
-
-  @IsNotEmpty()
-  themeId: string;
+  // siteId from tenant
+  @IsString()
+  themeId!: string;
 
   @IsOptional()
-  @IsDateString()
-  activatedAt?: string;
+  @IsBoolean()
+  isActive?: boolean;
 }

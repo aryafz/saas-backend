@@ -1,21 +1,23 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsISO8601 } from 'class-validator';
+import { IsInt, Min, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreatePaymentDto {
-  @IsNotEmpty()
-  sitePlanId!: string;
+  // siteId comes from tenant
+  @IsInt()
+  @Min(1)
+  amountCents!: number;
 
-  @IsNumber()
-  amount!: number;
-
-  @IsNotEmpty()
+  @IsString()
+  @Length(3, 10)
   currency!: string;
 
-  @IsOptional()
-  status?: string;
+  @IsString()
+  status!: string;
 
   @IsOptional()
-  @IsISO8601()
-  transactionDate?: string;
+  @IsString()
+  externalId?: string;
 
-  metadata?: any;
+  @IsOptional()
+  @IsString()
+  invoiceNo?: string;
 }

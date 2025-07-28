@@ -1,17 +1,11 @@
-import { IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateSiteFeatureDto {
-  @IsNotEmpty()
-  siteId: string;
-
-  @IsNotEmpty()
-  featureId: string;
+  // siteId comes from tenant
+  @IsString()
+  featureId!: string;
 
   @IsOptional()
-  @IsDateString()
-  activatedAt?: string;
-
-  @IsOptional()
-  @IsDateString()
-  expiresAt?: string;
+  @IsBoolean()
+  isActive?: boolean;
 }

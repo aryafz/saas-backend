@@ -25,7 +25,7 @@ export class SitePlanController {
   constructor(private readonly service: SitePlanService) {}
 
   @Post()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Create site plan' })
   create(@Body() dto: CreateSitePlanDto, @Tenant() tenant: string) {
     return this.service.create(dto, tenant);
@@ -44,7 +44,7 @@ export class SitePlanController {
   }
 
   @Patch(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Update site plan' })
   update(
     @Param('id') id: string,
@@ -55,7 +55,7 @@ export class SitePlanController {
   }
 
   @Delete(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Delete site plan' })
   remove(@Param('id') id: string, @Tenant() tenant: string) {
     return this.service.remove(id, tenant);
