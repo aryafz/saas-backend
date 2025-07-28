@@ -31,6 +31,8 @@ model Site {
   name      String
   slug      String   @unique
   ownerId   String   @db.Uuid
+  medusaStoreId        String?
+  defaultSalesChannelId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   owner     User     @relation("UserSites", fields: [ownerId], references: [id], onDelete: Cascade)

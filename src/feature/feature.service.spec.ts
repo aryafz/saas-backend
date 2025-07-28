@@ -15,7 +15,9 @@ describe('FeatureService', () => {
 
   it('creates feature', async () => {
     (prisma.feature.create as jest.Mock).mockResolvedValue({ id: 'f' });
-    await expect(service.create({ name: 'feat' })).resolves.toEqual({
+    await expect(
+      service.create({ code: 'FEAT', name: 'feat' }),
+    ).resolves.toEqual({
       id: 'f',
     });
   });

@@ -17,7 +17,14 @@ describe('PlanService', () => {
 
   it('creates plan', async () => {
     (prisma.plan.create as jest.Mock).mockResolvedValue({ id: 'p' });
-    await expect(service.create({ name: 'pro', price: 1 })).resolves.toEqual({
+    await expect(
+      service.create({
+        code: 'pro',
+        name: 'Pro',
+        priceCents: 100,
+        currency: 'USD',
+      }),
+    ).resolves.toEqual({
       id: 'p',
     });
   });

@@ -24,9 +24,8 @@ describe('UserService', () => {
   it('creates user', async () => {
     (prisma.user.create as jest.Mock).mockResolvedValue({ id: '1' });
 
-    // @ts-expect-error mock
     await expect(
-      service.create({ email: 'a', password: 'b', role: 'USER' }),
+      service.create({ email: 'a', password: 'b', role: 'user' }),
     ).resolves.toEqual({ id: '1' });
   });
 });
