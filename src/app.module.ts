@@ -14,12 +14,8 @@ import { SiteThemeModule } from './site-theme/site-theme.module';
 import { PaymentModule } from './payment/payment.module';
 import { CommerceModule } from './commerce/commerce.module';
 import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RolesGuard } from './auth/roles.guard';
 import { TenantGuard } from './auth/tenant.guard';
-import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { RolesGuard } from './auth/roles.guard';
 
 
 @Module({
@@ -41,10 +37,8 @@ import { RolesGuard } from './auth/roles.guard';
 
   ],
   providers: [
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: TenantGuard },
-
   ],
 })
 export class AppModule {}

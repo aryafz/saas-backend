@@ -4,47 +4,60 @@ import {
   Post,
   Body,
   Param,
-  Put,
+  Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { SitePlanService } from './site-plan.service';
 import { CreateSitePlanDto } from './dto/create-site-plan.dto';
 import { UpdateSitePlanDto } from './dto/update-site-plan.dto';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '@prisma/client';
+import { Tenant } from '../auth/tenant.decorator';
 
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @ApiTags('site-plans')
 @Controller('site-plans')
 export class SitePlanController {
   constructor(private readonly service: SitePlanService) {}
 
   @Post()
+  @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create site plan' })
-  create(@Body() dto: CreateSitePlanDto) {
-    return this.service.create(dto);
+  create(@Body() dto: CreateSitePlanDto, @Tenant() tenant: string) {
+    return this.service.create(dto, tenant);
   }
 
   @Get()
   @ApiOperation({ summary: 'List site plans' })
-  findAll() {
-    return this.service.findAll();
+  findAll(@Tenant() tenant: string) {
+    return this.service.findAll(tenant);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get site plan' })
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(id);
+  findOne(@Param('id') id: string, @Tenant() tenant: string) {
+    return this.service.findOne(id, tenant);
   }
 
-  @Put(':id')
+  @Patch(':id')
+  @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update site plan' })
-  update(@Param('id') id: string, @Body() dto: UpdateSitePlanDto) {
-    return this.service.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateSitePlanDto,
+    @Tenant() tenant: string,
+  ) {
+    return this.service.update(id, dto, tenant);
   }
 
   @Delete(':id')
+  @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete site plan' })
-  remove(@Param('id') id: string) {
-    return this.service.remove(id);
+  remove(@Param('id') id: string, @Tenant() tenant: string) {
+    return this.service.remove(id, tenant);
   }
 }

@@ -7,23 +7,26 @@ import { UpdateSiteDto } from './dto/update-site.dto';
 export class SiteService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateSiteDto) {
-    return this.prisma.site.create({ data: dto });
+  create(dto: CreateSiteDto, tenantId: string) {
+    return this.prisma.site.create({ data: { ...dto, ownerId: tenantId } });
   }
 
-  findAll() {
-    return this.prisma.site.findMany();
+  findAll(tenantId: string) {
+    return this.prisma.site.findMany({ where: { ownerId: tenantId } });
   }
 
-  findOne(id: string) {
-    return this.prisma.site.findUnique({ where: { id } });
+  findOne(id: string, tenantId: string) {
+    return this.prisma.site.findFirst({ where: { id, ownerId: tenantId } });
   }
 
-  update(id: string, dto: UpdateSiteDto) {
-    return this.prisma.site.update({ where: { id }, data: dto });
+  update(id: string, dto: UpdateSiteDto, tenantId: string) {
+    return this.prisma.site.update({
+      where: { id, ownerId: tenantId },
+      data: dto,
+    });
   }
 
-  remove(id: string) {
-    return this.prisma.site.delete({ where: { id } });
+  remove(id: string, tenantId: string) {
+    return this.prisma.site.delete({ where: { id, ownerId: tenantId } });
   }
 }

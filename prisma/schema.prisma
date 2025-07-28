@@ -15,6 +15,18 @@ enum Role {
   USER
 }
 
+enum SitePlanStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -51,13 +63,13 @@ model Plan {
 }
 
 model Feature {
-  id        String        @id @default(uuid())
-  name      String        @unique
+  id          String        @id @default(uuid())
+  name        String        @unique
   description String?
-  plans     PlanFeature[]
-  sites     SiteFeature[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  plans       PlanFeature[]
+  sites       SiteFeature[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model PlanFeature {
@@ -66,58 +78,41 @@ model PlanFeature {
   featureId String
   plan      Plan     @relation(fields: [planId], references: [id])
   feature   Feature  @relation(fields: [featureId], references: [id])
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([planId])
   @@index([featureId])
 }
 
-enum SitePlanStatus {
-  ACTIVE
-  CANCELED
-  EXPIRED
-}
-
 model SitePlan {
-  id         String          @id @default(uuid())
-  siteId     String
-  planId     String
-  site       Site            @relation(fields: [siteId], references: [id])
-  plan       Plan            @relation(fields: [planId], references: [id])
-  startedAt  DateTime        @default(now())
-  expiresAt  DateTime?
-  status     SitePlanStatus  @default(ACTIVE)
-  payments   Payment[]
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  @@id([planId, featureId])
-  @@index([featureId])
-}
-
-model SitePlan {
-  id        String   @id @default(uuid())
+  id        String         @id @default(uuid())
   siteId    String
   planId    String
-  site      Site     @relation(fields: [siteId], references: [id])
-  plan      Plan     @relation(fields: [planId], references: [id])
-  startDate DateTime @default(now())
-  endDate   DateTime?
-  isActive  Boolean  @default(true)
+  site      Site           @relation(fields: [siteId], references: [id])
+  plan      Plan           @relation(fields: [planId], references: [id])
+  startedAt DateTime       @default(now())
+  expiresAt DateTime?
+  status    SitePlanStatus @default(ACTIVE)
+  payments  Payment[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
   @@index([siteId])
   @@index([planId])
 }
 
 model SiteFeature {
-  id        String   @id @default(uuid())
-  siteId    String
-  featureId String
-  site      Site     @relation(fields: [siteId], references: [id])
-  feature   Feature  @relation(fields: [featureId], references: [id])
+  id          String   @id @default(uuid())
+  siteId      String
+  featureId   String
+  site        Site     @relation(fields: [siteId], references: [id])
+  feature     Feature  @relation(fields: [featureId], references: [id])
   activatedAt DateTime @default(now())
-  expiresAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  enabledAt DateTime @default(now())
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   @@index([siteId])
   @@index([featureId])
 }
@@ -131,56 +126,36 @@ model Theme {
   sites       SiteTheme[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  id        String      @id @default(uuid())
-  name      String
-  description String?
-  sites     SiteTheme[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-
 }
 
 model SiteTheme {
-  id        String   @id @default(uuid())
-  siteId    String
-  themeId   String
-  site      Site     @relation(fields: [siteId], references: [id])
-  theme     Theme    @relation(fields: [themeId], references: [id])
+  id          String   @id @default(uuid())
+  siteId      String
+  themeId     String
+  site        Site     @relation(fields: [siteId], references: [id])
+  theme       Theme    @relation(fields: [themeId], references: [id])
   activatedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([siteId])
   @@index([themeId])
 }
 
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-}
-
 model Payment {
-  id             String         @id @default(uuid())
+  id             String        @id @default(uuid())
+  siteId         String
   sitePlanId     String
-  sitePlan       SitePlan       @relation(fields: [sitePlanId], references: [id])
+  site           Site          @relation(fields: [siteId], references: [id])
+  sitePlan       SitePlan      @relation(fields: [sitePlanId], references: [id])
   amount         Float
   currency       String
-  status         PaymentStatus  @default(PENDING)
-  transactionDate DateTime      @default(now())
+  status         PaymentStatus @default(PENDING)
+  transactionDate DateTime     @default(now())
   metadata       Json?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-
-  @@index([sitePlanId])
-model Payment {
-  id        String   @id @default(uuid())
-  siteId    String
-  amount    Float
-  currency  String   @default("USD")
-  status    String
-  site      Site     @relation(fields: [siteId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@index([siteId])
+  @@index([sitePlanId])
 }
