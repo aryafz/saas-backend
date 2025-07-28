@@ -1,25 +1,30 @@
-FROM node:20-alpine
-
+# 🔧 مرحله Build: نصب، generate و build
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# کپی کردن تمام فایل‌های ضروری
+# نصب پکیج‌ها
 COPY package*.json ./
-COPY prisma ./prisma
-COPY src ./src
-COPY tsconfig*.json ./
-COPY nest-cli.json ./
-
-# نصب تمام پکیج‌ها
 RUN npm ci --legacy-peer-deps
 
-# ساختن نقشه قطعات پریزما
-RUN npx prisma generate
+# کپی بقیه فایل‌ها
+COPY . .
 
-# ساختن پروژه و پوشه 'dist'
-RUN npm run build
+# Prisma و Build
+RUN npx prisma generate && npm run build
 
-# باز کردن دروازه قلعه
+# ✅ بررسی پوشه dist
+RUN ls -l dist && test -f dist/main.js
+
+# 🔥 مرحله نهایی فقط با فایل‌های ضروری
+FROM node:20-alpine
+WORKDIR /app
+
+# فقط چیزهای لازم رو می‌بریم به مرحله نهایی
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
+# اجرای نهایی
 EXPOSE 3000
-
-# دستور نهایی برای روشن شدن و کار کردن قلعه
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
