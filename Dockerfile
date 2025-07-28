@@ -1,36 +1,25 @@
-# --- مرحله اول: کارگاه ساخت (Builder) ---
-FROM node:20-alpine AS builder
-
-# مشخص کردن پوشه کاری
-WORKDIR /app
-
-# کپی کردن فایل های پکیج
-COPY package*.json ./
-
-# نصب پکیج ها با دستور ضدخطای ما
-RUN npm ci --legacy-peer-deps
-
-# کپی کردن تمام کدهای پروژه
-COPY . .
-
-# *** مرحله کلیدی: ابتدا نقشه قطعات را بساز ***
-RUN npx prisma generate
-
-# ساختن پوشه نهایی 'dist' با استفاده از نقشه
-RUN npm run build
-
-# --- مرحله دوم: ویترین نمایش (Runner) ---
 FROM node:20-alpine
 
 WORKDIR /app
 
-# کپی کردن فایل های پکیج برای نصب فقط پکیج های اجرایی
+# کپی کردن تمام فایل‌های ضروری
 COPY package*.json ./
-RUN npm ci --legacy-peer-deps --omit=dev
+COPY prisma ./prisma
+COPY src ./src
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
 
-# کپی کردن پوشه 'dist' و 'prisma' از کارگاه ساخت
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+# نصب تمام پکیج‌ها
+RUN npm ci --legacy-peer-deps
 
-# تعریف دستور نهایی برای روشن شدن قلعه
+# ساختن نقشه قطعات پریزما
+RUN npx prisma generate
+
+# ساختن پروژه و پوشه 'dist'
+RUN npm run build
+
+# باز کردن دروازه قلعه
+EXPOSE 3000
+
+# دستور نهایی برای روشن شدن و کار کردن قلعه
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
