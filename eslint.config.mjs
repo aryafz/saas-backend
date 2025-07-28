@@ -6,7 +6,11 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
+15rb30-codex/set-up-multi-tenant-saas-backend-with-nestjs
+    ignores: ['eslint.config.mjs', 'generated/**'],
+
     ignores: ['eslint.config.mjs'],
+ main
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

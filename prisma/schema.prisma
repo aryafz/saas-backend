@@ -61,11 +61,35 @@ model Feature {
 }
 
 model PlanFeature {
+  id        String   @id @default(uuid())
   planId    String
   featureId String
   plan      Plan     @relation(fields: [planId], references: [id])
   feature   Feature  @relation(fields: [featureId], references: [id])
 
+
+  @@index([planId])
+  @@index([featureId])
+}
+
+enum SitePlanStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+}
+
+model SitePlan {
+  id         String          @id @default(uuid())
+  siteId     String
+  planId     String
+  site       Site            @relation(fields: [siteId], references: [id])
+  plan       Plan            @relation(fields: [planId], references: [id])
+  startedAt  DateTime        @default(now())
+  expiresAt  DateTime?
+  status     SitePlanStatus  @default(ACTIVE)
+  payments   Payment[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
   @@id([planId, featureId])
   @@index([featureId])
 }
@@ -79,7 +103,6 @@ model SitePlan {
   startDate DateTime @default(now())
   endDate   DateTime?
   isActive  Boolean  @default(true)
-
   @@index([siteId])
   @@index([planId])
 }
@@ -90,19 +113,31 @@ model SiteFeature {
   featureId String
   site      Site     @relation(fields: [siteId], references: [id])
   feature   Feature  @relation(fields: [featureId], references: [id])
+  activatedAt DateTime @default(now())
+  expiresAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   enabledAt DateTime @default(now())
-
   @@index([siteId])
   @@index([featureId])
 }
 
 model Theme {
+  id          String      @id @default(uuid())
+  key         String      @unique
+  name        String
+  description String?
+  assetsUrl   String
+  sites       SiteTheme[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   id        String      @id @default(uuid())
   name      String
   description String?
   sites     SiteTheme[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+
 }
 
 model SiteTheme {
@@ -117,6 +152,26 @@ model SiteTheme {
   @@index([themeId])
 }
 
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model Payment {
+  id             String         @id @default(uuid())
+  sitePlanId     String
+  sitePlan       SitePlan       @relation(fields: [sitePlanId], references: [id])
+  amount         Float
+  currency       String
+  status         PaymentStatus  @default(PENDING)
+  transactionDate DateTime      @default(now())
+  metadata       Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([sitePlanId])
 model Payment {
   id        String   @id @default(uuid())
   siteId    String
