@@ -7,10 +7,13 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '@prisma/client';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Tenant } from '../auth/tenant.decorator';
 
 @ApiBearerAuth()
 @ApiTags('payments')
@@ -19,32 +22,39 @@ export class PaymentController {
   constructor(private readonly service: PaymentService) {}
 
   @Post()
+  @Roles(Role.site_owner, Role.super_admin)
   @ApiOperation({ summary: 'Create payment' })
-  create(@Body() dto: CreatePaymentDto) {
-    return this.service.create(dto);
+  create(@Body() dto: CreatePaymentDto, @Tenant() tenant: string) {
+    return this.service.create(tenant, dto);
   }
 
   @Get()
   @ApiOperation({ summary: 'List payments' })
-  findAll() {
-    return this.service.findAll();
+  findAll(@Tenant() tenant: string) {
+    return this.service.findAll(tenant);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get payment' })
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(id);
+  findOne(@Param('id') id: string, @Tenant() tenant: string) {
+    return this.service.findOne(tenant, id);
   }
 
   @Put(':id')
+  @Roles(Role.site_owner, Role.super_admin)
   @ApiOperation({ summary: 'Update payment' })
-  update(@Param('id') id: string, @Body() dto: UpdatePaymentDto) {
-    return this.service.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePaymentDto,
+    @Tenant() tenant: string,
+  ) {
+    return this.service.update(tenant, id, dto);
   }
 
   @Delete(':id')
+  @Roles(Role.site_owner, Role.super_admin)
   @ApiOperation({ summary: 'Delete payment' })
-  remove(@Param('id') id: string) {
-    return this.service.remove(id);
+  remove(@Param('id') id: string, @Tenant() tenant: string) {
+    return this.service.remove(tenant, id);
   }
 }

@@ -25,7 +25,7 @@ export class SiteFeatureController {
   constructor(private readonly service: SiteFeatureService) {}
 
   @Post()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Create site feature' })
   create(@Body() dto: CreateSiteFeatureDto, @Tenant() tenant: string) {
     return this.service.create(dto, tenant);
@@ -44,7 +44,7 @@ export class SiteFeatureController {
   }
 
   @Patch(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Update site feature' })
   update(
     @Param('id') id: string,
@@ -55,7 +55,7 @@ export class SiteFeatureController {
   }
 
   @Delete(':id')
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.super_admin)
   @ApiOperation({ summary: 'Delete site feature' })
   remove(@Param('id') id: string, @Tenant() tenant: string) {
     return this.service.remove(id, tenant);

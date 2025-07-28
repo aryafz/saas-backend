@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  BadRequestException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -17,7 +22,11 @@ export class TenantGuard implements CanActivate {
     );
     const headerTenant = req.headers[headerName.toLowerCase()];
     const payloadTenant = req.user?.tenantId;
-    req.tenantId = headerTenant ?? payloadTenant;
+    const tenant = headerTenant ?? payloadTenant;
+    if (!tenant) {
+      throw new BadRequestException('Tenant not specified');
+    }
+    req.tenantId = tenant;
     return true;
   }
 }

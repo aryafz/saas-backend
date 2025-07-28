@@ -5,7 +5,7 @@ export class CreatePlanDto {
   code!: string;
   @IsNotEmpty()
   name!: string;
-  
+
   description?: string;
 
   @IsNumber()
