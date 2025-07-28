@@ -24,23 +24,21 @@ export class SiteFeatureService {
   }
 
   async update(id: string, dto: UpdateSiteFeatureDto, tenant: string) {
-    try {
-      return await this.prisma.siteFeature.update({
-        where: { id, siteId: tenant },
-        data: dto,
-      });
-    } catch {
+    const result = await this.prisma.siteFeature.updateMany({
+      where: { id, siteId: tenant },
+      data: dto,
+    });
+    if (result.count === 0)
       throw new NotFoundException('SiteFeature not found');
-    }
+    return this.findOne(id, tenant);
   }
 
   async remove(id: string, tenant: string) {
-    try {
-      return await this.prisma.siteFeature.delete({
-        where: { id, siteId: tenant },
-      });
-    } catch {
+    const result = await this.prisma.siteFeature.deleteMany({
+      where: { id, siteId: tenant },
+    });
+    if (result.count === 0)
       throw new NotFoundException('SiteFeature not found');
-    }
+    return { success: true };
   }
 }

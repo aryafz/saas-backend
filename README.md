@@ -1,26 +1,31 @@
 # SaaS Backend
 
-This project is a starter SaaS backend built with NestJS, Prisma and PostgreSQL. It provides multi-tenant foundations, JWT authentication with role based access control and Swagger documentation.
+This project provides a multi-tenant SaaS backend built with **NestJS**, **Prisma** and **PostgreSQL**. It includes JWT authentication with role based access control, Swagger documentation and basic modules for managing users, sites and plans.
 
-## Setup
+## Prerequisites
 
-1. Install dependencies
+- Node.js v18+
+- PostgreSQL database
+
+## Getting Started
+
+1. Install dependencies:
    ```bash
    npm install
    ```
-2. Configure environment variables in `.env` (see `.env.example`).
-3. Generate Prisma client and create migrations
+2. Copy `.env.example` to `.env` and adjust values.
+3. Generate Prisma client and run the initial migration:
    ```bash
    npx prisma generate
-   npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/init.sql
+   npx prisma migrate dev --name init
    ```
-4. Seed the database
+4. Seed the database:
    ```bash
    npm run seed
    ```
-5. Run the server
+5. Start the development server:
    ```bash
    npm run start:dev
    ```
 
-Swagger docs are available at `/api` when the server is running.
+Swagger documentation will be available at `http://localhost:3000/docs`.

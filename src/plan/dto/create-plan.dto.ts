@@ -2,8 +2,14 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreatePlanDto {
   @IsNotEmpty()
-  name: string;
+  code!: string;
+  @IsNotEmpty()
+  name!: string;
+  
+  description?: string;
 
   @IsNumber()
-  price: number;
+  priceCents!: number;
+
+  currency?: string;
 }

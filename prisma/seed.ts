@@ -1,44 +1,43 @@
-import { PrismaClient, Role } from '../generated/prisma';
+import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = await bcrypt.hash('admin123', 10);
-  const admin = await prisma.user.create({
-    data: {
-      email: 'admin@example.com',
-      password,
-      role: Role.SUPER_ADMIN,
-    },
+  const password = await bcrypt.hash(
+    process.env.SEED_ADMIN_PASSWORD ?? 'ChangeMe123!',
+    10,
+  );
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@example.com' },
+    update: {},
+    create: { email: 'admin@example.com', password, role: Role.super_admin },
   });
-
-  const basicPlan = await prisma.plan.create({
-    data: {
-      name: 'Basic',
-      price: 0,
-    },
+  const plan = await prisma.plan.upsert({
+    where: { code: 'BASIC' },
+    update: {},
+    create: { code: 'BASIC', name: 'Basic', priceCents: 9900, currency: 'USD' },
   });
-
-  await prisma.site.create({
-    data: {
-      name: 'Default Site',
-      ownerId: admin.id,
-      plans: {
-        create: {
-          planId: basicPlan.id,
-          status: 'ACTIVE',
-        },
-      },
-    },
+  const feat = await prisma.feature.upsert({
+    where: { code: 'CUSTOM_DOMAIN' },
+    update: {},
+    create: { code: 'CUSTOM_DOMAIN', name: 'Custom Domain' },
   });
+  await prisma.planFeature.upsert({
+    where: { planId_featureId: { planId: plan.id, featureId: feat.id } },
+    update: {},
+    create: { planId: plan.id, featureId: feat.id },
+  });
+  await prisma.theme.upsert({
+    where: { code: 'DEFAULT' },
+    update: {},
+    create: { code: 'DEFAULT', name: 'Default Theme' },
+  });
+  console.log('Seed completed:', { admin: admin.email });
 }
 
-main()
+void main()
   .catch((e) => {
     console.error(e);
-    process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => void prisma.$disconnect());

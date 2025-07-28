@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Delete,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { SiteFeatureService } from './site-feature.service';
